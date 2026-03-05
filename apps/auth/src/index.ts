@@ -1,8 +1,8 @@
 import { serve } from '@hono/node-server';
 
 import { authApp } from './app.js';
-import { authConfig } from './config.js';
-import { prisma } from './prisma.js';
+import { authConfig } from './config/auth.config.js';
+import { prisma } from './db/prisma.client.js';
 
 const server = serve({
   fetch: authApp.fetch,

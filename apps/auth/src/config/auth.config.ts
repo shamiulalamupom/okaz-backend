@@ -17,6 +17,7 @@ const parsed = loadEnv(envSchema, {
 });
 
 export const authConfig = {
+  databaseUrl: parsed.DATABASE_URL,
   jwt: {
     audience: parsed.AUTH_JWT_AUDIENCE,
     expiresInSeconds: parsed.AUTH_JWT_EXPIRES_IN_SECONDS,
@@ -24,6 +25,5 @@ export const authConfig = {
     secret: parsed.AUTH_JWT_SECRET
   },
   nodeEnv: parsed.NODE_ENV,
-  port: parsed.PORT,
-  databaseUrl: parsed.DATABASE_URL
+  port: parsed.PORT
 };

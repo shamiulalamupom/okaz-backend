@@ -18,9 +18,7 @@ export const gatewayOpenApi = {
       get: {
         summary: 'Gateway liveness probe',
         responses: {
-          '200': {
-            description: 'Gateway is live'
-          }
+          '200': { description: 'Gateway is live' }
         }
       }
     },
@@ -28,12 +26,8 @@ export const gatewayOpenApi = {
       get: {
         summary: 'Gateway readiness probe',
         responses: {
-          '200': {
-            description: 'Gateway is ready'
-          },
-          '503': {
-            description: 'Gateway is not ready'
-          }
+          '200': { description: 'Gateway is ready' },
+          '503': { description: 'Gateway is not ready' }
         }
       }
     },

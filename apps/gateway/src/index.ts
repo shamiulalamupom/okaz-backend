@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 
 import { gatewayApp } from './app.js';
-import { gatewayConfig } from './config.js';
+import { gatewayConfig } from './config/gateway.config.js';
 
 const server = serve({
   fetch: gatewayApp.fetch,

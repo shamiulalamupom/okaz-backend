@@ -14,8 +14,8 @@ const bearerHeaderSchema = z.string().regex(/^Bearer\s+.+$/);
 export const authMiddleware = (jwtConfig: JwtConfig): MiddlewareHandler => {
   return async (c, next) => {
     const authHeader = c.req.header('authorization');
-
     const parsedAuthHeader = bearerHeaderSchema.safeParse(authHeader);
+
     if (!parsedAuthHeader.success) {
       return c.json({ message: 'Unauthorized' }, 401);
     }
