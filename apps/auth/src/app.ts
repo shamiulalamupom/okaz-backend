@@ -4,7 +4,8 @@ import { Hono } from 'hono';
 
 import './hono-env.js';
 import { authOpenApi } from './docs/auth.openapi.js';
-import { applyAuthRoutes } from './routes/index.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
+import { healthRoutes } from './modules/health/health.routes.js';
 
 const logger = createLogger('auth-service');
 
@@ -13,9 +14,10 @@ const authApp = new Hono();
 authApp.use('*', correlationIdMiddleware());
 authApp.use('*', requestLoggerMiddleware(logger));
 
+authApp.route('/', healthRoutes);
 authApp.get('/openapi.json', (c) => c.json(authOpenApi));
 authApp.get('/docs', swaggerUI({ url: '/openapi.json' }));
-applyAuthRoutes(authApp);
+authApp.route('/auth', authRoutes);
 
 authApp.notFound((c) => jsonError(c, 404, 'Not Found', { code: 'NOT_FOUND' }));
 

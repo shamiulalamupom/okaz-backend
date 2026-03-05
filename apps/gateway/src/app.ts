@@ -8,7 +8,9 @@ import { gatewayOpenApi } from './docs/gateway.openapi.js';
 import './hono-env.js';
 import { createLoginRateLimitMiddleware } from './middleware/rate-limit.middleware.js';
 import { securityHeadersMiddleware } from './middleware/security-headers.middleware.js';
-import { applyGatewayRoutes } from './routes/index.js';
+import { createAuthProxyRoutes } from './modules/auth-proxy/auth-proxy.routes.js';
+import { createDemoRoutes } from './modules/demo/demo.routes.js';
+import { createHealthRoutes } from './modules/health/health.routes.js';
 
 const logger = createLogger('gateway');
 
@@ -27,9 +29,11 @@ gatewayApp.use(
 gatewayApp.use('*', securityHeadersMiddleware());
 gatewayApp.use('/auth/login', createLoginRateLimitMiddleware(gatewayConfig.loginRateLimit));
 
+gatewayApp.route('/', createHealthRoutes(gatewayConfig.authServiceUrl));
 gatewayApp.get('/openapi.json', (c) => c.json(gatewayOpenApi));
 gatewayApp.get('/docs', swaggerUI({ url: '/openapi.json' }));
-applyGatewayRoutes(gatewayApp, gatewayConfig);
+gatewayApp.route('/auth', createAuthProxyRoutes(gatewayConfig.authServiceUrl));
+gatewayApp.route('/', createDemoRoutes(gatewayConfig.jwt));
 
 gatewayApp.notFound((c) => jsonError(c, 404, 'Not Found', { code: 'NOT_FOUND' }));
 
