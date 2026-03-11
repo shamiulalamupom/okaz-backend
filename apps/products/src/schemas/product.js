@@ -6,3 +6,7 @@ export const createProductSchema = zod.object({
   price: zod.number().positive("Le prix doit être un nombre positif"),
   category: zod.string().optional(),
 });
+
+export const productIdSchema = zod.object({
+  id: zod.string().length(24, "ID de produit invalide"),
+});
