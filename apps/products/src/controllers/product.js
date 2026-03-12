@@ -1,4 +1,4 @@
-import * as productService from "../services/productService.js";
+import * as productService from "../services/product.service.js";
 import { createProductSchema, updateProductSchema } from "../schemas/product.js";
 
 
