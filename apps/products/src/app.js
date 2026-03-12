@@ -1,11 +1,11 @@
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
-const productRoutes = require("./routes/product.routes");
-const swaggerUi = require("swagger-ui-express");
-const swaggerRouter = require("../swagger");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import productRoutes from "./routes/product.routes.js";
+//import swaggerRouter from "../swagger.js";
 
-require("dotenv").config();
+dotenv.config();
 
 const app = express();
 connectDB();
@@ -13,11 +13,10 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// Routes API
 app.use("/products", productRoutes);
-
-// Swagger
-app.use("/api-docs", swaggerRouter);
+//app.use("/api-docs", swaggerRouter);
 
 const PORT = process.env.PORT || 3002;
-app.listen(PORT, () => console.log(`Products Service en ligne sur le port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Products Service en ligne sur le port ${PORT}`);
+});

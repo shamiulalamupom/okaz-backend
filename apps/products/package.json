@@ -1,6 +1,7 @@
 {
   "name": "products-service",
   "version": "1.0.0",
+  "type": "module",
   "description": "Microservice Products pour le projet marketplace",
   "main": "src/app.js",
   "scripts": {

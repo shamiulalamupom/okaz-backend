@@ -1,18 +1,13 @@
-// Ceci est le contenu actuel de db.js
-
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/products_db", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connecté ✅");
   } catch (error) {
-    console.error("Erreur MongoDB :", error);
+    console.error("Erreur MongoDB :", error.message);
     process.exit(1);
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

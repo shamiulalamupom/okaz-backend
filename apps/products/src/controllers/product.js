@@ -1,29 +1,25 @@
-import { createProductSchema } from "../schemas/product";
-import { createProduct } from "../services/product";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../schemas/product.js";
+import * as productService from "../services/product.service.js";
 
-// Créer produit
-exports.createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
     const data = createProductSchema.safeParse(req.body);
 
     if (!data.success) {
-      return res.status(400).json({ error: data.error.message });
+      return res.status(400).json({ error: data.error.flatten() });
     }
 
-    const { status, message, result } = await createProduct(
-      req,
-      res,
-      data.data,
-    );
-
-    res.status(status).json({ message, data: result });
+    const result = await productService.createProduct(data.data);
+    res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Tous les produits
-exports.getProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   try {
     const products = await productService.getProducts();
     res.json(products);
@@ -32,8 +28,7 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-// Produit par ID
-exports.getProductById = async (req, res) => {
+export const getProductById = async (req, res) => {
   try {
     const product = await productService.getProductById(req.params.id);
 
@@ -47,16 +42,15 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// Modifier produit
-exports.updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
-    const errors = validateProductData(req.body);
+    const data = updateProductSchema.safeParse(req.body);
 
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
+    if (!data.success) {
+      return res.status(400).json({ error: data.error.flatten() });
     }
 
-    const updated = await productService.updateProduct(req.params.id, req.body);
+    const updated = await productService.updateProduct(req.params.id, data.data);
 
     if (!updated) {
       return res.status(404).json({ error: "Produit non trouvé" });
@@ -68,8 +62,7 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// Supprimer produit
-exports.deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   try {
     const deleted = await productService.deleteProduct(req.params.id);
 

@@ -1,27 +1,24 @@
-const Product = require("../models/product.model");
+import Product from "../models/product.js";
 
-// Créer produit
-exports.createProduct = async (data) => {
-  const product = new Product(data);
-  return await product.save();
+export const createProduct = async (data) => {
+  return await Product.create(data);
 };
 
-// Tous les produits
-exports.getProducts = async () => {
+export const getProducts = async () => {
   return await Product.find();
 };
 
-// Produit par ID
-exports.getProductById = async (id) => {
+export const getProductById = async (id) => {
   return await Product.findById(id);
 };
 
-// Modifier produit
-exports.updateProduct = async (id, data) => {
-  return await Product.findByIdAndUpdate(id, data, { new: true });
+export const updateProduct = async (id, data) => {
+  return await Product.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators: true,
+  });
 };
 
-// Supprimer produit
-exports.deleteProduct = async (id) => {
+export const deleteProduct = async (id) => {
   return await Product.findByIdAndDelete(id);
 };
