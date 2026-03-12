@@ -1,77 +1,179 @@
-import {
-  createProductSchema,
-  updateProductSchema,
-} from "../schemas/product.js";
-import * as productService from "../services/product.service.js";
+import * as productService from "../services/productService.js";
+import { createProductSchema, updateProductSchema } from "../schemas/product.js";
 
+
+// Créer un produit
 export const createProduct = async (req, res) => {
   try {
-    const data = createProductSchema.safeParse(req.body);
 
-    if (!data.success) {
-      return res.status(400).json({ error: data.error.flatten() });
+    // Validation des données
+    const validation = createProductSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Données invalides",
+        errors: validation.error.errors
+      });
     }
 
-    const result = await productService.createProduct(data.data);
-    res.status(201).json(result);
+    // Création du produit
+    const product = await productService.createProduct(validation.data);
+
+    // Réponse
+    return res.status(201).json({
+      message: "Produit créé avec succès",
+      data: product
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Log de l'erreur côté serveur
+    console.error("Erreur createProduct:", error);
+
+    // Réponse en cas d'erreur serveur
+    return res.status(500).json({
+      message: "Erreur serveur lors de la création du produit"
+    });
   }
 };
 
+
+
+// Tous les produits
 export const getProducts = async (req, res) => {
   try {
+
+    // Récupération des produits
     const products = await productService.getProducts();
-    res.json(products);
+
+    // Réponse
+    return res.status(200).json({
+      count: products.length,
+      data: products
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Log de l'erreur côté serveur
+    console.error("Erreur getProducts:", error);
+
+    // Réponse en cas d'erreur serveur
+    return res.status(500).json({
+      message: "Erreur serveur lors de la récupération des produits"
+    });
   }
 };
 
+
+
+// Produit par ID
 export const getProductById = async (req, res) => {
   try {
-    const product = await productService.getProductById(req.params.id);
+
+    // Récupération de l'id
+    const { id } = req.params;
+
+    // Recherche du produit
+    const product = await productService.getProductById(id);
 
     if (!product) {
-      return res.status(404).json({ error: "Produit non trouvé" });
+      return res.status(404).json({
+        message: "Produit introuvable"
+      });
     }
 
-    res.json(product);
+    // Réponse
+    return res.status(200).json({
+      data: product
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Log de l'erreur côté serveur
+    console.error("Erreur getProductById:", error);
+
+    // Réponse en cas d'erreur serveur
+    return res.status(500).json({
+      message: "Erreur serveur lors de la récupération du produit"
+    });
   }
 };
 
+
+
+// Modifier un produit
 export const updateProduct = async (req, res) => {
   try {
-    const data = updateProductSchema.safeParse(req.body);
 
-    if (!data.success) {
-      return res.status(400).json({ error: data.error.flatten() });
+    // Récupération de l'id
+    const { id } = req.params;
+
+    // Validation des données
+    const validation = updateProductSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({
+        message: "Données invalides",
+        errors: validation.error.errors
+      });
     }
 
-    const updated = await productService.updateProduct(req.params.id, data.data);
+    // Mise à jour du produit
+    const updatedProduct = await productService.updateProduct(
+      id,
+      validation.data
+    );
 
-    if (!updated) {
-      return res.status(404).json({ error: "Produit non trouvé" });
+    if (!updatedProduct) {
+      return res.status(404).json({
+        message: "Produit introuvable"
+      });
     }
 
-    res.json(updated);
+    // Réponse
+    return res.status(200).json({
+      message: "Produit mis à jour",
+      data: updatedProduct
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Log de l'erreur côté serveur
+    console.error("Erreur updateProduct:", error);
+
+    // Réponse en cas d'erreur serveur
+    return res.status(500).json({
+      message: "Erreur serveur lors de la mise à jour"
+    });
   }
 };
 
+
+
+// Supprimer un produit
 export const deleteProduct = async (req, res) => {
   try {
-    const deleted = await productService.deleteProduct(req.params.id);
+
+    // Récupération de l'id
+    const { id } = req.params;
+
+    // Suppression du produit
+    const deleted = await productService.deleteProduct(id);
 
     if (!deleted) {
-      return res.status(404).json({ error: "Produit non trouvé" });
+      return res.status(404).json({
+        message: "Produit introuvable"
+      });
     }
 
-    res.json({ message: "Produit supprimé ✅" });
+    // Réponse
+    return res.status(200).json({
+      message: "Produit supprimé avec succès"
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Log de l'erreur côté serveur
+    console.error("Erreur deleteProduct:", error);
+
+    // Réponse en cas d'erreur serveur
+    return res.status(500).json({
+      message: "Erreur serveur lors de la suppression"
+    });
   }
 };
