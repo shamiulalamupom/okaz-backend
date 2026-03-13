@@ -1,179 +1,58 @@
-import * as productService from "../services/product.service.js";
-import { createProductSchema, updateProductSchema } from "../schemas/product.js";
+// src/controllers/product.js
+import {
+  createProduct as createProductService, // Import de la fonction de création depuis le service
+  getProducts as getProductsService,     // Import de la fonction pour récupérer tous les produits
+  getProductById as getProductByIdService, // Import de la fonction pour récupérer un produit par ID
+  updateProduct as updateProductService, // Import de la fonction pour mettre à jour un produit
+  deleteProduct as deleteProductService  // Import de la fonction pour supprimer un produit
+} from "../services/product.service.js";
 
-
-// Créer un produit
+// Controller pour créer un produit
 export const createProduct = async (req, res) => {
   try {
-
-    // Validation des données
-    const validation = createProductSchema.safeParse(req.body);
-
-    if (!validation.success) {
-      return res.status(400).json({
-        message: "Données invalides",
-        errors: validation.error.errors
-      });
-    }
-
-    // Création du produit
-    const product = await productService.createProduct(validation.data);
-
-    // Réponse
-    return res.status(201).json({
-      message: "Produit créé avec succès",
-      data: product
-    });
-
+    const result = await createProductService(req, res); // Appelle le service pour créer un produit
+    res.status(result.status).json({ message: result.message, data: result.data }); // Envoie la réponse HTTP avec le résultat
   } catch (error) {
-    // Log de l'erreur côté serveur
-    console.error("Erreur createProduct:", error);
-
-    // Réponse en cas d'erreur serveur
-    return res.status(500).json({
-      message: "Erreur serveur lors de la création du produit"
-    });
+    res.status(500).json({ error: error.message }); // Envoie une réponse d'erreur en cas d'exception
   }
 };
 
-
-
-// Tous les produits
+// Controller pour récupérer tous les produits
 export const getProducts = async (req, res) => {
   try {
-
-    // Récupération des produits
-    const products = await productService.getProducts();
-
-    // Réponse
-    return res.status(200).json({
-      count: products.length,
-      data: products
-    });
-
+    const result = await getProductsService(req, res); // Appelle le service pour récupérer la liste de tous les produits
+    res.status(result.status).json({ message: result.message, data: result.data }); // Retourne la réponse avec les produits
   } catch (error) {
-    // Log de l'erreur côté serveur
-    console.error("Erreur getProducts:", error);
-
-    // Réponse en cas d'erreur serveur
-    return res.status(500).json({
-      message: "Erreur serveur lors de la récupération des produits"
-    });
+    res.status(500).json({ error: error.message }); // Gestion d'une erreur serveur
   }
 };
 
-
-
-// Produit par ID
+// Controller pour récupérer un produit par son ID
 export const getProductById = async (req, res) => {
   try {
-
-    // Récupération de l'id
-    const { id } = req.params;
-
-    // Recherche du produit
-    const product = await productService.getProductById(id);
-
-    if (!product) {
-      return res.status(404).json({
-        message: "Produit introuvable"
-      });
-    }
-
-    // Réponse
-    return res.status(200).json({
-      data: product
-    });
-
+    const result = await getProductByIdService(req, res); // Appelle le service pour récupérer le produit spécifique
+    res.status(result.status).json({ message: result.message, data: result.data }); // Retourne le produit dans la réponse
   } catch (error) {
-    // Log de l'erreur côté serveur
-    console.error("Erreur getProductById:", error);
-
-    // Réponse en cas d'erreur serveur
-    return res.status(500).json({
-      message: "Erreur serveur lors de la récupération du produit"
-    });
+    res.status(500).json({ error: error.message }); // Gestion d'une erreur serveur
   }
 };
 
-
-
-// Modifier un produit
+// Controller pour mettre à jour un produit
 export const updateProduct = async (req, res) => {
   try {
-
-    // Récupération de l'id
-    const { id } = req.params;
-
-    // Validation des données
-    const validation = updateProductSchema.safeParse(req.body);
-
-    if (!validation.success) {
-      return res.status(400).json({
-        message: "Données invalides",
-        errors: validation.error.errors
-      });
-    }
-
-    // Mise à jour du produit
-    const updatedProduct = await productService.updateProduct(
-      id,
-      validation.data
-    );
-
-    if (!updatedProduct) {
-      return res.status(404).json({
-        message: "Produit introuvable"
-      });
-    }
-
-    // Réponse
-    return res.status(200).json({
-      message: "Produit mis à jour",
-      data: updatedProduct
-    });
-
+    const result = await updateProductService(req, res); // Appelle le service pour mettre à jour le produit
+    res.status(result.status).json({ message: result.message, data: result.data }); // Retourne le produit mis à jour
   } catch (error) {
-    // Log de l'erreur côté serveur
-    console.error("Erreur updateProduct:", error);
-
-    // Réponse en cas d'erreur serveur
-    return res.status(500).json({
-      message: "Erreur serveur lors de la mise à jour"
-    });
+    res.status(500).json({ error: error.message }); // Gestion d'une erreur serveur
   }
 };
 
-
-
-// Supprimer un produit
+// Controller pour supprimer un produit
 export const deleteProduct = async (req, res) => {
   try {
-
-    // Récupération de l'id
-    const { id } = req.params;
-
-    // Suppression du produit
-    const deleted = await productService.deleteProduct(id);
-
-    if (!deleted) {
-      return res.status(404).json({
-        message: "Produit introuvable"
-      });
-    }
-
-    // Réponse
-    return res.status(200).json({
-      message: "Produit supprimé avec succès"
-    });
-
+    const result = await deleteProductService(req, res); // Appelle le service pour supprimer le produit
+    res.status(result.status).json({ message: result.message, data: result.data }); // Confirme la suppression dans la réponse
   } catch (error) {
-    // Log de l'erreur côté serveur
-    console.error("Erreur deleteProduct:", error);
-
-    // Réponse en cas d'erreur serveur
-    return res.status(500).json({
-      message: "Erreur serveur lors de la suppression"
-    });
+    res.status(500).json({ error: error.message }); // Gestion d'une erreur serveur
   }
 };
