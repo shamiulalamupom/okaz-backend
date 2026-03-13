@@ -71,6 +71,7 @@ Integration tests assume services are running (typically via `docker compose up`
 - JWT verified with signature, exp, iss, aud checks
 - Correlation ID (`X-Request-Id`) generated at gateway and propagated
 - Login rate limiting at gateway (`/auth/login`)
+- Auth request payload size limit (`AUTH_REQUEST_MAX_BYTES`, default `1024`)
 - CORS enabled only at gateway
 - Gateway security headers enabled
 - Structured JSON logs with sensitive redaction

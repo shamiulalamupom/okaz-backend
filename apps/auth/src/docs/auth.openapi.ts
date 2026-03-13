@@ -11,6 +11,24 @@ export const authOpenApi = {
         scheme: 'bearer',
         bearerFormat: 'JWT'
       }
+    },
+    requestBodies: {
+      credentials: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                email: { type: 'string', format: 'email', maxLength: 320 },
+                password: { type: 'string', minLength: 8, maxLength: 128 }
+              },
+              required: ['email', 'password']
+            }
+          }
+        }
+      }
     }
   },
   paths: {
@@ -34,9 +52,13 @@ export const authOpenApi = {
     '/auth/register': {
       post: {
         summary: 'Register a new user',
+        requestBody: {
+          $ref: '#/components/requestBodies/credentials'
+        },
         responses: {
           '201': { description: 'Registered' },
           '400': { description: 'Validation error' },
+          '413': { description: 'Payload too large' },
           '409': { description: 'Email already exists' }
         }
       }
@@ -44,8 +66,13 @@ export const authOpenApi = {
     '/auth/login': {
       post: {
         summary: 'Login user and issue JWT',
+        requestBody: {
+          $ref: '#/components/requestBodies/credentials'
+        },
         responses: {
           '200': { description: 'Authenticated' },
+          '400': { description: 'Validation error' },
+          '413': { description: 'Payload too large' },
           '401': { description: 'Invalid credentials' }
         }
       }

@@ -1,5 +1,11 @@
 import { swaggerUI } from '@hono/swagger-ui';
-import { correlationIdMiddleware, createLogger, jsonError, requestLoggerMiddleware } from '@okaz/shared';
+import {
+  correlationIdMiddleware,
+  createContentLengthLimitMiddleware,
+  createLogger,
+  jsonError,
+  requestLoggerMiddleware
+} from '@okaz/shared';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
@@ -27,7 +33,9 @@ gatewayApp.use(
   })
 );
 gatewayApp.use('*', securityHeadersMiddleware());
+gatewayApp.use('/auth/register', createContentLengthLimitMiddleware(gatewayConfig.authRequestMaxBytes));
 gatewayApp.use('/auth/login', createLoginRateLimitMiddleware(gatewayConfig.loginRateLimit));
+gatewayApp.use('/auth/login', createContentLengthLimitMiddleware(gatewayConfig.authRequestMaxBytes));
 
 gatewayApp.route('/', createHealthRoutes(gatewayConfig.authServiceUrl));
 gatewayApp.get('/openapi.json', (c) => c.json(gatewayOpenApi));

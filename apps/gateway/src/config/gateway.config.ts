@@ -2,6 +2,7 @@ import { loadEnv } from '@okaz/shared';
 import { z } from 'zod';
 
 const envSchema = z.object({
+  AUTH_REQUEST_MAX_BYTES: z.coerce.number().int().positive().default(1024),
   AUTH_JWT_AUDIENCE: z.string().min(1),
   AUTH_JWT_ISSUER: z.string().min(1),
   AUTH_JWT_SECRET: z.string().min(32),
@@ -20,6 +21,7 @@ const parsed = loadEnv(envSchema, {
 
 export const gatewayConfig = {
   authServiceUrl: parsed.AUTH_SERVICE_URL,
+  authRequestMaxBytes: parsed.AUTH_REQUEST_MAX_BYTES,
   corsOrigin: parsed.CORS_ORIGIN,
   jwt: {
     audience: parsed.AUTH_JWT_AUDIENCE,

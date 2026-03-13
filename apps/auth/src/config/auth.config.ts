@@ -2,6 +2,7 @@ import { loadEnv } from '@okaz/shared';
 import { z } from 'zod';
 
 const envSchema = z.object({
+  AUTH_REQUEST_MAX_BYTES: z.coerce.number().int().positive().default(1024),
   AUTH_JWT_AUDIENCE: z.string().min(1),
   AUTH_JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(3600),
   AUTH_JWT_ISSUER: z.string().min(1),
@@ -25,5 +26,6 @@ export const authConfig = {
     secret: parsed.AUTH_JWT_SECRET
   },
   nodeEnv: parsed.NODE_ENV,
-  port: parsed.PORT
+  port: parsed.PORT,
+  requestMaxBytes: parsed.AUTH_REQUEST_MAX_BYTES
 };

@@ -1,18 +1,17 @@
-import { jsonError } from '@okaz/shared';
+import { parseJsonBody } from '@okaz/shared';
 import type { Context } from 'hono';
 
+import { authConfig } from '../../config/auth.config.js';
 import { authService, isUniqueConstraintError } from './auth.service.js';
-import { credentialsSchema } from './auth.schemas.js';
+import { loginRequestSchema, registerRequestSchema } from './auth.schemas.js';
 
 export const registerController = async (c: Context) => {
-  const payload = await c.req.json().catch(() => null);
-  const parsed = credentialsSchema.safeParse(payload);
+  const parsed = await parseJsonBody(c, registerRequestSchema, {
+    maxBytes: authConfig.requestMaxBytes
+  });
 
   if (!parsed.success) {
-    return jsonError(c, 400, 'Invalid request body', {
-      code: 'VALIDATION_ERROR',
-      details: parsed.error.flatten()
-    });
+    return parsed.response;
   }
 
   try {
@@ -28,14 +27,12 @@ export const registerController = async (c: Context) => {
 };
 
 export const loginController = async (c: Context) => {
-  const payload = await c.req.json().catch(() => null);
-  const parsed = credentialsSchema.safeParse(payload);
+  const parsed = await parseJsonBody(c, loginRequestSchema, {
+    maxBytes: authConfig.requestMaxBytes
+  });
 
   if (!parsed.success) {
-    return jsonError(c, 400, 'Invalid request body', {
-      code: 'VALIDATION_ERROR',
-      details: parsed.error.flatten()
-    });
+    return parsed.response;
   }
 
   const loginResult = await authService.login(parsed.data);
